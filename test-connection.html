@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supabase Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0F172A;
+            color: white;
+        }
+        .test-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        .warning { color: #F59E0B; }
+        button {
+            background: #3B82F6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2563EB; }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Millennium Potter - Connection Test</h1>
+    
+    <div class="test-box">
+        <h2>Test 1: Supabase Reachability</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 2: Database Tables</h2>
+        <button onclick="testTables()">Check Tables</button>
+        <div id="tables-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 3: Admin User</h2>
+        <button onclick="testAdmin()">Check Admin</button>
+        <div id="admin-result"></div>
+    </div>
+
+    <div class="test-box">
+        <h2>Test 4: Login Test</h2>
+        <button onclick="testLogin()">Try Login</button>
+        <div id="login-result"></div>
+    </div>
+
+    <script type="module">
+        const SUPABASE_URL = 'https://azuokmzqtxsuszowxckm.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF6dW9rbXpxdHhzdXN6b3d4Y2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NDI4MjIsImV4cCI6MjA3ODQxODgyMn0.-QZ7I94xfHMi93tSv2cT2npG9-YX3LoJ-9hWh3xHNvY';
+
+        window.testConnection = async () => {
+            const result = document.getElementById('connection-result');
+            result.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    result.innerHTML = '<p class="success">✅ Connected to Supabase!</p>';
+                } else {
+                    result.innerHTML = `<p class="error">❌ Connection failed: ${response.status}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Network error: ${error.message}</p>`;
+            }
+        };
+
+        window.testTables = async () => {
+            const result = document.getElementById('tables-result');
+            result.innerHTML = '<p>Checking tables...</p>';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?limit=1`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = `
+                        <p class="success">✅ Tables exist!</p>
+                        <p>Found ${data.length} user(s)</p>
+                    `;
+                } else if (response.status === 404) {
+                    result.innerHTML = `
+                        <p class="error">❌ Tables don't exist!</p>
+                        <p class="warning">⚠️ You need to run RUN_ALL_MIGRATIONS.sql</p>
+                    `;
+                } else {
+                    result.innerHTML = `<p class="error">❌ Error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        };
+
+        window.testAdmin = async () => {
+            const result = document.getElementById('admin-result');
+            result.innerHTML = '<p>Checking admin user...</p>';
+            
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/users?email=eq.admin@millenniumpotter.com&select=*`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        result.innerHTML = `
+                            <p class="success">✅ Admin user exists!</p>
+                            <pre>${JSON.stringify(data[0], null, 2)}</pre>
+                        `;
+                    } else {
+                        result.innerHTML = `
+                            <p class="error">❌ Admin user not found!</p>
+                            <p class="warning">⚠️ Run RUN_ALL_MIGRATIONS.sql to create admin</p>
+                        `;
+                    }
+                } else {
+                    result.innerHTML = `<p class="error">❌ Error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        };
+
+        window.testLogin = async () => {
+            const result = document.getElementById('login-result');
+            result.innerHTML = '<p>Testing login...</p>';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@millenniumpotter.com',
+                        password: 'Password123!'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `
+                        <p class="success">✅ Login successful!</p>
+                        <p>You can now login to the app!</p>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <p class="error">❌ Login failed!</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p class="warning">⚠️ Make sure you ran RUN_ALL_MIGRATIONS.sql</p>
+                    `;
+                }
+            } catch (error) {
+                result.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        };
+
+        // Auto-run first test
+        setTimeout(() => testConnection(), 500);
+    </script>
+</body>
+</html>
