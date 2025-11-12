@@ -149,7 +149,7 @@ export class AuthService {
   /**
    * Listen to auth state changes - CUSTOM AUTH (NOOP)
    */
-  static onAuthStateChange(callback: (event: string, session: any) => void) {
+  static onAuthStateChange(_callback: (event: string, session: any) => void) {
     // Custom auth doesn't have real-time state changes
     // Return a dummy unsubscribe function
     return {
