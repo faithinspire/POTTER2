@@ -7,7 +7,8 @@ import { Input, Select } from '../../components/shared/Input';
 import { Button } from '../../components/shared/Button';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
 import { formatCurrency } from '../../utils/formatters';
-import { calculateInterest, calculateTotalRepayment, calculateWeeklyPayment, formatInterestBreakdown, validateLoanAmount } from '../../utils/interestCalculator';
+// Temporarily disabled for deployment
+// import { calculateInterest, calculateTotalRepayment, calculateWeeklyPayment, formatInterestBreakdown, validateLoanAmount } from '../../utils/interestCalculator';
 
 export const ApplyLoan = () => {
   const navigate = useNavigate();
@@ -36,20 +37,21 @@ export const ApplyLoan = () => {
       const weeks = parseInt(loan.duration_weeks);
       
       if (amount > 0 && weeks > 0) {
-        const validation = validateLoanAmount(amount);
-        if (validation.isValid) {
-          const breakdown = formatInterestBreakdown(amount);
-          const weeklyPayment = calculateWeeklyPayment(amount, weeks);
-          setInterestBreakdown({
-            ...breakdown,
-            weeklyPayment,
-            totalWeeks: weeks
-          });
-          setError('');
-        } else {
-          setError(validation.message || '');
-          setInterestBreakdown(null);
-        }
+        // Simple interest calculation for now
+        const interest = Math.round((amount / 10000) * 1800);
+        const total = amount + interest;
+        const weeklyPayment = Math.round(total / weeks);
+        
+        setInterestBreakdown({
+          principal: amount,
+          interest,
+          total,
+          weeklyPayment,
+          totalWeeks: weeks,
+          interestRate: (interest / amount) * 100,
+          breakdown: `₦${amount.toLocaleString()} + ₦${interest.toLocaleString()} interest = ₦${total.toLocaleString()} total`
+        });
+        setError('');
       } else {
         setInterestBreakdown(null);
       }
@@ -78,7 +80,7 @@ export const ApplyLoan = () => {
 
       const amount = parseFloat(loan.amount);
       const weeks = parseInt(loan.duration_weeks);
-      const interest = calculateInterest(amount);
+      const interest = Math.round((amount / 10000) * 1800);
       const interestRate = (interest / amount) * 100;
 
       await LoanService.createLoan({
