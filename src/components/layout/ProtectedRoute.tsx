@@ -13,13 +13,24 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
 
   console.log('🔒 ProtectedRoute check:', { user: !!user, profile: !!profile, loading, role: profile?.role });
 
+  // Always show loading while auth is initializing
   if (loading) {
     console.log('🔒 Still loading auth...');
     return <LoadingSpinner fullScreen />;
   }
 
+  // Check localStorage directly as fallback
+  const authToken = localStorage.getItem('auth_token');
+  const userProfileStr = localStorage.getItem('user_profile');
+  
   if (!user || !profile) {
-    console.log('🔒 No user/profile, redirecting to login');
+    // If no user in context but we have localStorage data, wait a bit more
+    if (authToken && userProfileStr) {
+      console.log('🔒 Found localStorage data, waiting for context to load...');
+      return <LoadingSpinner fullScreen />;
+    }
+    
+    console.log('🔒 No user/profile and no localStorage data, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 

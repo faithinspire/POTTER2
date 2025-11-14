@@ -41,8 +41,8 @@ export const Login = () => {
 
       console.log('🔵 Step 3: Navigating to:', targetPath);
       
-      // Use React Router navigation instead of window.location
-      navigate(targetPath, { replace: true });
+      // Force page reload to reinitialize AuthContext with new user
+      window.location.href = targetPath;
       
       console.log('✅ Navigation complete');
     } catch (err: any) {
