@@ -35,8 +35,8 @@
 3. Copy these two values:
 
 ```
-Project URL: https://xxxxx.supabase.co
-anon public key: eyJxxx...
+Project URL: https://jprovhgmhoerajhkdnop.supabase.co
+anon public key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impwcm92aGdtaG9lcmFqaGtkbm9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1NTQ4MDgsImV4cCI6MjA3ODEzMDgwOH0.-1DbmjKfQuZwZXIUPOYGf2lFPWDnDD0BIBA8uBlJy6Q
 ```
 
 ## Step 4: Configure Your App (1 minute)
@@ -45,7 +45,7 @@ anon public key: eyJxxx...
 
 ```bash
 VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impwcm92aGdtaG9lcmFqaGtkbm9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1NTQ4MDgsImV4cCI6MjA3ODEzMDgwOH0.-1DbmjKfQuZwZXIUPOYGf2lFPWDnDD0BIBA8uBlJy6Q
 ```
 
 2. Replace with your actual values from Step 3

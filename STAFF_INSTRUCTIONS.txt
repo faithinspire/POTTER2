@@ -1,0 +1,33 @@
+🏦 MILLENNIUM POTTER APP - INSTALLATION GUIDE
+
+📱 QUICK SETUP (2 Minutes):
+
+1. OPEN THE APP:
+   - Double-click "index.html" 
+   - App opens in your browser
+
+2. INSTALL ON PHONE/COMPUTER (Optional but Recommended):
+   - Look for "Install App" notification
+   - Click "Install" or "Add to Home Screen"
+   - App appears on your home screen like any other app!
+
+3. LOGIN:
+   - Email: admin@millenniumpotter.com
+   - Password: Password123!
+
+📋 WHAT YOU GET:
+✅ Professional banking app
+✅ Works on phones, tablets, computers
+✅ Home screen icon (after installing)
+✅ Works offline (after first use)
+✅ Secure login system
+
+🔧 TROUBLESHOOTING:
+- Use Chrome browser for best experience
+- Make sure all files are in the same folder
+- For phone: extract all files first, then open index.html
+
+📞 NEED HELP?
+Contact your administrator for support.
+
+🎉 ENJOY YOUR NEW MILLENNIUM POTTER APP!

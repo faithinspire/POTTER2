@@ -7,6 +7,7 @@ import { Input, Select } from '../../components/shared/Input';
 import { Button } from '../../components/shared/Button';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
 import { formatCurrency } from '../../utils/formatters';
+import { calculateInterest, calculateTotalRepayment, calculateWeeklyPayment, formatInterestBreakdown, validateLoanAmount } from '../../utils/interestCalculator';
 
 export const ApplyLoan = () => {
   const navigate = useNavigate();
@@ -20,26 +21,40 @@ export const ApplyLoan = () => {
   const [loan, setLoan] = useState({
     customer_id: '',
     amount: '',
-    interest_rate: '10',
     duration_weeks: '12',
   });
 
-  const [weeklyPayment, setWeeklyPayment] = useState(0);
+  const [interestBreakdown, setInterestBreakdown] = useState<any>(null);
 
   useEffect(() => {
     loadCustomers();
   }, []);
 
   useEffect(() => {
-    if (loan.amount && loan.interest_rate && loan.duration_weeks) {
-      const payment = LoanService.calculateWeeklyPayment(
-        parseFloat(loan.amount),
-        parseFloat(loan.interest_rate),
-        parseInt(loan.duration_weeks)
-      );
-      setWeeklyPayment(payment);
+    if (loan.amount && loan.duration_weeks) {
+      const amount = parseFloat(loan.amount);
+      const weeks = parseInt(loan.duration_weeks);
+      
+      if (amount > 0 && weeks > 0) {
+        const validation = validateLoanAmount(amount);
+        if (validation.isValid) {
+          const breakdown = formatInterestBreakdown(amount);
+          const weeklyPayment = calculateWeeklyPayment(amount, weeks);
+          setInterestBreakdown({
+            ...breakdown,
+            weeklyPayment,
+            totalWeeks: weeks
+          });
+          setError('');
+        } else {
+          setError(validation.message || '');
+          setInterestBreakdown(null);
+        }
+      } else {
+        setInterestBreakdown(null);
+      }
     }
-  }, [loan.amount, loan.interest_rate, loan.duration_weeks]);
+  }, [loan.amount, loan.duration_weeks]);
 
   const loadCustomers = async () => {
     try {
@@ -61,13 +76,18 @@ export const ApplyLoan = () => {
     try {
       if (!profile) throw new Error('User profile not found');
 
+      const amount = parseFloat(loan.amount);
+      const weeks = parseInt(loan.duration_weeks);
+      const interest = calculateInterest(amount);
+      const interestRate = (interest / amount) * 100;
+
       await LoanService.createLoan({
         customer_id: loan.customer_id,
         agent_id: profile.id,
         branch_id: profile.branch_id!,
-        amount: parseFloat(loan.amount),
-        interest_rate: parseFloat(loan.interest_rate),
-        duration_weeks: parseInt(loan.duration_weeks),
+        amount: amount,
+        interest_rate: interestRate,
+        duration_weeks: weeks,
       });
 
       setSuccess(true);
@@ -135,20 +155,11 @@ export const ApplyLoan = () => {
                 type="number"
                 value={loan.amount}
                 onChange={(e) => setLoan({ ...loan, amount: e.target.value })}
-                placeholder="50000"
+                placeholder="10000"
                 required
-                min="1000"
-              />
-
-              <Input
-                label="Interest Rate (%)"
-                type="number"
-                value={loan.interest_rate}
-                onChange={(e) => setLoan({ ...loan, interest_rate: e.target.value })}
-                required
-                min="0"
-                max="100"
-                step="0.1"
+                min="5000"
+                max="1000000"
+                step="1000"
               />
 
               <Input
@@ -157,17 +168,42 @@ export const ApplyLoan = () => {
                 value={loan.duration_weeks}
                 onChange={(e) => setLoan({ ...loan, duration_weeks: e.target.value })}
                 required
-                min="1"
-                max="104"
+                min="4"
+                max="52"
+                placeholder="12"
               />
 
-              {weeklyPayment > 0 && (
-                <div className="p-6 bg-green-500/10 border border-green-500/30 rounded-lg">
-                  <p className="text-sm text-gray-400 mb-2">Weekly Payment Amount:</p>
-                  <p className="text-3xl font-bold text-green-400">{formatCurrency(weeklyPayment)}</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Total Repayment: {formatCurrency(weeklyPayment * parseInt(loan.duration_weeks || '0'))}
-                  </p>
+              {/* Interest Calculation Display */}
+              {interestBreakdown && (
+                <div className="p-6 bg-gradient-to-r from-yellow-500/10 to-green-500/10 border border-yellow-500/30 rounded-lg">
+                  <h3 className="text-lg font-semibold text-white mb-4">💰 Loan Calculation</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-sm text-gray-400">Principal Amount</p>
+                      <p className="text-xl font-bold text-white">{formatCurrency(interestBreakdown.principal)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Interest Amount</p>
+                      <p className="text-xl font-bold text-yellow-400">{formatCurrency(interestBreakdown.interest)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Total Repayment</p>
+                      <p className="text-xl font-bold text-green-400">{formatCurrency(interestBreakdown.total)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400">Weekly Payment</p>
+                      <p className="text-xl font-bold text-blue-400">{formatCurrency(interestBreakdown.weeklyPayment)}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-black/20 p-4 rounded-lg">
+                    <p className="text-sm text-gray-400 mb-2">Interest Rate: {interestBreakdown.interestRate.toFixed(1)}%</p>
+                    <p className="text-sm text-gray-300">{interestBreakdown.breakdown}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      * Interest calculated as: (₦{interestBreakdown.principal.toLocaleString()} ÷ ₦10,000) × ₦1,800 = ₦{interestBreakdown.interest.toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               )}
 

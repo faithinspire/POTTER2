@@ -116,7 +116,7 @@ ADMIN:
 
 IGANDO BRANCH:
   subadmin.igando@test.com / subadmin123
-  agent1.igando@test.com / agent123
+ / agent123
   agent2.igando@test.com / agent123
 
 ABULE-EGBA BRANCH:
@@ -126,3 +126,4 @@ ABULE-EGBA BRANCH:
 
 LOGIN: http://localhost:5179/login
 ' as "CREDENTIALS";
+  agent1.igando@test.com

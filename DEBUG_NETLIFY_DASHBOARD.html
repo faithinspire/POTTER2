@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Netlify Dashboard - Millennium Potter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #0F172A;
+            color: white;
+        }
+        .debug-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        button {
+            background: #3B82F6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563EB;
+        }
+        .success { color: #10B981; }
+        .error { color: #EF4444; }
+        .warning { color: #F59E0B; }
+        .info { color: #3B82F6; }
+        pre {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        .test-result.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10B981;
+        }
+        .test-result.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #EF4444;
+        }
+        .test-result.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #F59E0B;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚨 DEBUG NETLIFY DASHBOARD - Millennium Potter</h1>
+    
+    <div class="debug-section">
+        <h2>🎯 Current Issue</h2>
+        <p><strong>Problem:</strong> Dashboard shows blank after login on Netlify</p>
+        <p><strong>Expected:</strong> Dashboard should show stats, charts, and data</p>
+        <p><strong>Actual:</strong> Blank/white page or loading forever</p>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔍 Step 1: Test Your Netlify App</h2>
+        <p><strong>Your Netlify URL:</strong> <input type="text" id="netlifyUrl" placeholder="https://your-app.netlify.app" style="width: 300px; padding: 5px; margin: 5px;"></p>
+        <button onclick="openNetlifyApp()">Open Netlify App</button>
+        <button onclick="testNetlifyConnection()">Test Connection</button>
+        
+        <div id="connectionResult"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔧 Step 2: Debug Console Errors</h2>
+        <p>After opening your Netlify app:</p>
+        <ol>
+            <li><strong>Press F12</strong> to open Developer Tools</li>
+            <li><strong>Go to Console tab</strong></li>
+            <li><strong>Login as admin</strong></li>
+            <li><strong>Look for error messages</strong></li>
+        </ol>
+        
+        <h3>Common Error Messages:</h3>
+        <div class="test-result error">
+            <strong>❌ Environment Variable Error:</strong>
+            <pre>Cannot read property 'VITE_SUPABASE_URL' of undefined</pre>
+            <p><strong>Solution:</strong> Add environment variables to Netlify</p>
+        </div>
+        
+        <div class="test-result error">
+            <strong>❌ Network Error:</strong>
+            <pre>Failed to fetch from Supabase
+CORS error
+Network request failed</pre>
+            <p><strong>Solution:</strong> Check Supabase connection and CORS</p>
+        </div>
+        
+        <div class="test-result error">
+            <strong>❌ JavaScript Error:</strong>
+            <pre>Cannot read property of null
+Undefined function
+Module not found</pre>
+            <p><strong>Solution:</strong> Check build process and imports</p>
+        </div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🚀 Step 3: Test Supabase Connection</h2>
+        <button onclick="testSupabaseConnection()">Test Supabase</button>
+        <button onclick="testAuthFunction()">Test Auth Function</button>
+        <button onclick="testDashboardAPI()">Test Dashboard API</button>
+        
+        <div id="supabaseResults"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>⚙️ Step 4: Check Environment Variables</h2>
+        <p>In Netlify Dashboard:</p>
+        <ol>
+            <li><strong>Go to:</strong> Site Settings → Environment Variables</li>
+            <li><strong>Add these variables:</strong></li>
+        </ol>
+        
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px;">
+            <p><strong>VITE_SUPABASE_URL</strong></p>
+            <pre>https://wzsgulkmehebakotxlyt.supabase.co</pre>
+            
+            <p><strong>VITE_SUPABASE_ANON_KEY</strong></p>
+            <pre>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6c2d1bGttZWhlYmFrb3R4bHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NjYxNTcsImV4cCI6MjA3ODQ0MjE1N30._etRwToSyHSVrqdOziVunr9I40JCCDgeLWehqh8jH1U</pre>
+        </div>
+        
+        <p><strong>After adding variables:</strong> Trigger a new deploy</p>
+    </div>
+
+    <div class="debug-section">
+        <h2>🔍 Step 5: Manual Testing</h2>
+        <h3>Test Authentication:</h3>
+        <button onclick="testManualAuth()">Test Manual Login</button>
+        
+        <h3>Test Dashboard Data:</h3>
+        <button onclick="testDashboardData()">Test Dashboard Loading</button>
+        
+        <div id="manualTestResults"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>📞 What to Report</h2>
+        <p>After testing, tell me:</p>
+        <ul>
+            <li><strong>What errors appear in browser console?</strong></li>
+            <li><strong>Does login work but dashboard is blank?</strong></li>
+            <li><strong>Are environment variables set on Netlify?</strong></li>
+            <li><strong>Any network request failures?</strong></li>
+            <li><strong>Does it work locally but not on Netlify?</strong></li>
+        </ul>
+        
+        <div style="background: rgba(59, 130, 246, 0.2); padding: 15px; border-radius: 5px; border-left: 4px solid #3B82F6;">
+            <p><strong>Most Common Solutions:</strong></p>
+            <ul>
+                <li>Add environment variables to Netlify</li>
+                <li>Redeploy after adding variables</li>
+                <li>Check Supabase project is active</li>
+                <li>Clear browser cache and try again</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function openNetlifyApp() {
+            const url = document.getElementById('netlifyUrl').value || 'https://your-app.netlify.app';
+            window.open(url, '_blank');
+        }
+        
+        function testNetlifyConnection() {
+            const url = document.getElementById('netlifyUrl').value;
+            if (!url) {
+                alert('Please enter your Netlify URL first');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<p class="info">Testing connection...</p>';
+            
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = '<div class="test-result success">✅ Netlify app is accessible</div>';
+                    } else {
+                        resultDiv.innerHTML = '<div class="test-result error">❌ Netlify app returned error: ' + response.status + '</div>';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<div class="test-result error">❌ Cannot reach Netlify app: ' + error.message + '</div>';
+                });
+        }
+        
+        function testSupabaseConnection() {
+            const resultDiv = document.getElementById('supabaseResults');
+            resultDiv.innerHTML = '<p class="info">Testing Supabase connection...</p>';
+            
+            fetch('https://wzsgulkmehebakotxlyt.supabase.co/rest/v1/', {
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6c2d1bGttZWhlYmFrb3R4bHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NjYxNTcsImV4cCI6MjA3ODQ0MjE1N30._etRwToSyHSVrqdOziVunr9I40JCCDgeLWehqh8jH1U'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    resultDiv.innerHTML += '<div class="test-result success">✅ Supabase connection working</div>';
+                } else {
+                    resultDiv.innerHTML += '<div class="test-result error">❌ Supabase error: ' + response.status + '</div>';
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<div class="test-result error">❌ Supabase connection failed: ' + error.message + '</div>';
+            });
+        }
+        
+        function testAuthFunction() {
+            const resultDiv = document.getElementById('supabaseResults');
+            resultDiv.innerHTML += '<p class="info">Testing auth function...</p>';
+            
+            fetch('https://wzsgulkmehebakotxlyt.supabase.co/rest/v1/rpc/authenticate_user', {
+                method: 'POST',
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6c2d1bGttZWhlYmFrb3R4bHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NjYxNTcsImV4cCI6MjA3ODQ0MjE1N30._etRwToSyHSVrqdOziVunr9I40JCCDgeLWehqh8jH1U',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_email: 'admin@millenniumpotter.com',
+                    user_password: 'Password123!'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    resultDiv.innerHTML += '<div class="test-result success">✅ Auth function working</div>';
+                } else {
+                    resultDiv.innerHTML += '<div class="test-result error">❌ Auth function failed or no user found</div>';
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<div class="test-result error">❌ Auth function error: ' + error.message + '</div>';
+            });
+        }
+        
+        function testDashboardAPI() {
+            const resultDiv = document.getElementById('supabaseResults');
+            resultDiv.innerHTML += '<p class="info">Testing dashboard API...</p>';
+            
+            fetch('https://wzsgulkmehebakotxlyt.supabase.co/rest/v1/users?select=*', {
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6c2d1bGttZWhlYmFrb3R4bHl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4NjYxNTcsImV4cCI6MjA3ODQ0MjE1N30._etRwToSyHSVrqdOziVunr9I40JCCDgeLWehqh8jH1U'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    resultDiv.innerHTML += '<div class="test-result success">✅ Dashboard API working - Found ' + data.length + ' users</div>';
+                } else {
+                    resultDiv.innerHTML += '<div class="test-result error">❌ Dashboard API error: ' + JSON.stringify(data) + '</div>';
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML += '<div class="test-result error">❌ Dashboard API failed: ' + error.message + '</div>';
+            });
+        }
+        
+        function testManualAuth() {
+            const resultDiv = document.getElementById('manualTestResults');
+            resultDiv.innerHTML = '<p class="info">Testing manual authentication...</p>';
+            
+            // Simulate the auth process
+            const authToken = btoa(JSON.stringify({
+                id: 'test-id',
+                email: 'admin@millenniumpotter.com',
+                timestamp: Date.now()
+            }));
+            
+            const userProfile = {
+                id: 'test-id',
+                email: 'admin@millenniumpotter.com',
+                role: 'admin',
+                full_name: 'Test Admin'
+            };
+            
+            localStorage.setItem('auth_token', authToken);
+            localStorage.setItem('user_profile', JSON.stringify(userProfile));
+            
+            resultDiv.innerHTML += '<div class="test-result success">✅ Manual auth data set in localStorage</div>';
+            resultDiv.innerHTML += '<pre>' + JSON.stringify(userProfile, null, 2) + '</pre>';
+        }
+        
+        function testDashboardData() {
+            const resultDiv = document.getElementById('manualTestResults');
+            resultDiv.innerHTML += '<p class="info">Testing dashboard data loading...</p>';
+            
+            const authToken = localStorage.getItem('auth_token');
+            const userProfile = localStorage.getItem('user_profile');
+            
+            if (authToken && userProfile) {
+                resultDiv.innerHTML += '<div class="test-result success">✅ Auth data found in localStorage</div>';
+                try {
+                    const profile = JSON.parse(userProfile);
+                    resultDiv.innerHTML += '<div class="test-result success">✅ User profile parsed successfully</div>';
+                    resultDiv.innerHTML += '<pre>Role: ' + profile.role + '\nEmail: ' + profile.email + '</pre>';
+                } catch (e) {
+                    resultDiv.innerHTML += '<div class="test-result error">❌ User profile data corrupted</div>';
+                }
+            } else {
+                resultDiv.innerHTML += '<div class="test-result error">❌ No auth data found - login first</div>';
+            }
+        }
+    </script>
+</body>
+</html>

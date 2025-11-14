@@ -24,6 +24,10 @@ export const RegisterCustomer = () => {
     id_number: '',
   });
 
+  // Photo upload
+  const [customerPhoto, setCustomerPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
+
   // Guarantors (minimum 1)
   const [guarantors, setGuarantors] = useState([
     { full_name: '', phone: '', address: '', relationship: '', id_type: '', id_number: '' }
@@ -45,6 +49,33 @@ export const RegisterCustomer = () => {
     const updated = [...guarantors];
     updated[index] = { ...updated[index], [field]: value };
     setGuarantors(updated);
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
+        return;
+      }
+      
+      setCustomerPhoto(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPhotoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+      setError(''); // Clear any previous errors
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,6 +137,36 @@ export const RegisterCustomer = () => {
             {/* Customer Details */}
             <div>
               <h2 className="text-xl font-bold text-white mb-4">Customer Information</h2>
+              
+              {/* Photo Upload */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Customer Photo
+                </label>
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="w-full px-4 py-2 bg-white/10 border border-gray-700 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-yellow-500 file:text-black hover:file:bg-yellow-400 focus:outline-none focus:border-yellow-500"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Upload customer photo (JPG, PNG, max 5MB)
+                    </p>
+                  </div>
+                  {photoPreview && (
+                    <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-700">
+                      <img
+                        src={photoPreview}
+                        alt="Customer preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   label="Full Name"

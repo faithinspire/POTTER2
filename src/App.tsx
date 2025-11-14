@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { Login } from './pages/auth/Login'
 import { Signup } from './pages/auth/Signup'
 import { AdminDashboard } from './pages/admin/Dashboard'
@@ -21,9 +23,11 @@ import { LoanList } from './pages/agent/LoanList'
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <PWAInstallPrompt />
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -157,9 +161,10 @@ function App() {
           {/* Default Route */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

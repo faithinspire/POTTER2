@@ -32,8 +32,8 @@ This guide will walk you through setting up Supabase for the Millennium Potter f
 1. In your project root, create a `.env` file:
 
 ```bash
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
+VITE_SUPABASE_URL=https://jprovhgmhoerajhkdnop.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impwcm92aGdtaG9lcmFqaGtkbm9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1NTQ4MDgsImV4cCI6MjA3ODEzMDgwOH0.-1DbmjKfQuZwZXIUPOYGf2lFPWDnDD0BIBA8uBlJy6Q
 ```
 
 2. Replace the values with your actual Supabase credentials

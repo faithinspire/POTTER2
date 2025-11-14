@@ -33,16 +33,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Check active session - CUSTOM AUTH
     const initAuth = async () => {
       try {
+        console.log('🔄 AuthContext: Initializing auth...');
         const currentUser = await AuthService.getCurrentUser();
+        console.log('🔄 AuthContext: Current user:', currentUser);
+        
         if (currentUser) {
           setUser(currentUser as any);
           const userProfile = await AuthService.getUserProfile(currentUser.id);
+          console.log('🔄 AuthContext: User profile:', userProfile);
           setProfile(userProfile);
+          console.log('✅ AuthContext: Auth initialized successfully');
+        } else {
+          console.log('❌ AuthContext: No current user found');
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error('❌ AuthContext: Auth initialization error:', error);
       } finally {
         setLoading(false);
+        console.log('🔄 AuthContext: Loading complete');
       }
     };
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Millennium Potter - Quick Launcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .launch-btn {
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .info-box p {
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        
+        .credentials {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        
+        .install-note {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🏦</div>
+        <h1>Millennium Potter</h1>
+        <p class="subtitle">Fintech Management System</p>
+        
+        <a href="index.html" class="launch-btn">🚀 Launch App</a>
+        
+        <div class="info-box">
+            <h3>📋 Login Credentials</h3>
+            <div class="credentials">
+                <strong>Email:</strong> admin@millenniumpotter.com<br>
+                <strong>Password:</strong> Password123!
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📱 Installation</h3>
+            <p>After launching, look for "Install App" notification to add this to your home screen like a native app!</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>💡 Features</h3>
+            <p>• Customer Management<br>
+               • Loan Processing<br>
+               • Payment Tracking<br>
+               • Analytics & Reports<br>
+               • User Management</p>
+        </div>
+        
+        <p class="install-note">
+            💡 For best experience, use Chrome browser and install as PWA
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phone Connection Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .success {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .info {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        h1 {
+            font-size: 36px;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="success">✅</div>
+    <h1>CONNECTION SUCCESSFUL!</h1>
+    <div class="info">
+        <p><strong>Your phone can reach your computer!</strong></p>
+        <p>Server IP: 192.168.55.207</p>
+        <p>Port: 5174</p>
+        <p>Time: <span id="time"></span></p>
+    </div>
+    <p>Now go to the main app:</p>
+    <p><strong>http://192.168.55.207:5174/</strong></p>
+    
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleTimeString();
+    </script>
+</body>
+</html>
