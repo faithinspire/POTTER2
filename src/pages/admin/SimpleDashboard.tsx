@@ -150,6 +150,29 @@ export const SimpleDashboard = () => {
             </div>
           </Card>
 
+          {/* New Features Info */}
+          <Card className="glass-card p-6 mb-8">
+            <h3 className="text-lg font-semibold text-white mb-4">🚀 New Features Available</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                <h4 className="font-semibold text-green-400 mb-2">📸 Customer Registration</h4>
+                <p className="text-sm text-gray-300">Now includes photo upload functionality for professional customer documentation.</p>
+              </div>
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-400 mb-2">💰 Interest Calculator</h4>
+                <p className="text-sm text-gray-300">Automatic calculation: ₦10,000 = ₦1,800 interest. Scales proportionally for all loan amounts.</p>
+              </div>
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <h4 className="font-semibold text-yellow-400 mb-2">🏢 Branch Oversight</h4>
+                <p className="text-sm text-gray-300">Complete visibility into all branch operations, staff performance, and payment tracking.</p>
+              </div>
+              <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                <h4 className="font-semibold text-purple-400 mb-2">📊 Real-time Analytics</h4>
+                <p className="text-sm text-gray-300">Live dashboard updates with comprehensive reporting and data export capabilities.</p>
+              </div>
+            </div>
+          </Card>
+
           {/* Quick Actions */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <Button
@@ -162,7 +185,7 @@ export const SimpleDashboard = () => {
             <Button
               variant="primary"
               fullWidth
-              onClick={() => alert('Analytics feature coming soon!')}
+              onClick={() => window.location.href = '/admin/analytics'}
             >
               📊 View Analytics
             </Button>
