@@ -50,7 +50,7 @@ export const AdminDashboard = () => {
       console.log('🔄 Loading dashboard data...');
       
       // Load each section independently with timeouts
-      const loadWithTimeout = async <T>(promise: Promise<T>, fallback: T, name: string): Promise<T> => {
+      async function loadWithTimeout<T>(promise: Promise<T>, fallback: T, name: string): Promise<T> {
         try {
           const timeoutPromise = new Promise<never>((_, reject) => 
             setTimeout(() => reject(new Error('Timeout')), 10000)
@@ -63,7 +63,7 @@ export const AdminDashboard = () => {
           console.error(`❌ ${name} failed:`, error);
           return fallback;
         }
-      };
+      }
 
       // Load all data with fallbacks
       const [statsData, disbursed, loans, branches] = await Promise.all([
