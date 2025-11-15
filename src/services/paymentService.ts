@@ -239,15 +239,17 @@ export class PaymentService {
       branchId = userProfile.branch_id;
     }
 
-    // Get customer's loan
+    // Get customer's loan (approved or active status)
     const { data: loan } = await supabase
       .from('loans')
       .select('id')
       .eq('customer_id', data.customer_id)
-      .eq('status', 'active')
+      .in('status', ['active', 'approved'])
+      .order('created_at', { ascending: false })
+      .limit(1)
       .single();
 
-    if (!loan) throw new Error('No active loan found for customer');
+    if (!loan) throw new Error('No active or approved loan found for this customer. Please ensure the loan is approved first.');
 
     const paymentData = {
       loan_id: loan.id,
