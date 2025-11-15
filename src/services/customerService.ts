@@ -143,4 +143,94 @@ export class CustomerService {
     if (customerError) throw customerError;
     return customer;
   }
+
+  /**
+   * Update customer photo
+   */
+  static async updateCustomerPhoto(customerId: string, photoUrl: string): Promise<void> {
+    const { error } = await supabase
+      .from('customers')
+      .update({ photo_url: photoUrl })
+      .eq('id', customerId);
+
+    if (error) throw error;
+  }
+
+  /**
+   * Upload customer photo to Supabase Storage
+   */
+  static async uploadCustomerPhoto(customerId: string, file: File): Promise<string> {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${customerId}-${Date.now()}.${fileExt}`;
+    const filePath = `customer-photos/${fileName}`;
+
+    // Upload file to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('customer-photos')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // Get public URL
+    const { data } = supabase.storage
+      .from('customer-photos')
+      .getPublicUrl(filePath);
+
+    // Update customer record with photo URL
+    await this.updateCustomerPhoto(customerId, data.publicUrl);
+
+    return data.publicUrl;
+  }
+
+  /**
+   * Update customer with enhanced fields
+   */
+  static async updateCustomer(
+    customerId: string,
+    updates: Partial<Customer>
+  ): Promise<Customer> {
+    const { data, error } = await supabase
+      .from('customers')
+      .update(updates)
+      .eq('id', customerId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  /**
+   * Get customer statistics
+   */
+  static async getCustomerStats(customerId: string): Promise<any> {
+    const [loansResult, paymentsResult] = await Promise.all([
+      supabase
+        .from('loans')
+        .select('principal_amount, interest_amount, status')
+        .eq('customer_id', customerId),
+      supabase
+        .from('payments')
+        .select('amount, payment_type, created_at')
+        .eq('customer_id', customerId)
+    ]);
+
+    const loans = loansResult.data || [];
+    const payments = paymentsResult.data || [];
+
+    const totalBorrowed = loans.reduce((sum, loan) => sum + loan.principal_amount, 0);
+    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+    const activeLoans = loans.filter(loan => loan.status === 'active').length;
+    const completedLoans = loans.filter(loan => loan.status === 'completed').length;
+
+    return {
+      totalBorrowed,
+      totalPaid,
+      activeLoans,
+      completedLoans,
+      totalLoans: loans.length,
+      totalPayments: payments.length,
+      paymentHistory: payments.slice(0, 10)
+    };
+  }
 }

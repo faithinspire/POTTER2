@@ -11,10 +11,7 @@ import { DashboardStats } from '../../types/disbursement';
 import { LoanWithDetails } from '../../types/loan';
 import { formatCurrency } from '../../utils/formatters';
 import { supabase } from '../../services/supabase';
-import { id } from 'date-fns/locale';
-import { id } from 'date-fns/locale';
-import { id } from 'date-fns/locale';
-import { id } from 'date-fns/locale';
+
 
 interface BranchStats {
   id: string;

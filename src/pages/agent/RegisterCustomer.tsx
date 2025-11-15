@@ -5,7 +5,7 @@ import { CustomerService } from '../../services/customerService';
 import { Input, Select } from '../../components/shared/Input';
 import { Button } from '../../components/shared/Button';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
-import { ID_TYPES } from '../../utils/constants';
+import { ID_TYPES, NIGERIAN_STATES, MARITAL_STATUS } from '../../utils/constants';
 
 export const RegisterCustomer = () => {
   const navigate = useNavigate();
@@ -22,6 +22,13 @@ export const RegisterCustomer = () => {
     address: '',
     id_type: '',
     id_number: '',
+    state_of_origin: '',
+    occupation: '',
+    next_of_kin_name: '',
+    next_of_kin_address: '',
+    business_address: '',
+    marital_status: '',
+    union_name: '',
   });
 
   // Photo upload
@@ -30,12 +37,12 @@ export const RegisterCustomer = () => {
 
   // Guarantors (minimum 1)
   const [guarantors, setGuarantors] = useState([
-    { full_name: '', phone: '', address: '', relationship: '', id_type: '', id_number: '' }
+    { full_name: '', phone: '', address: '', relationship: '', id_type: '', id_number: '', state_of_origin: '' }
   ]);
 
   const addGuarantor = () => {
     if (guarantors.length < 3) {
-      setGuarantors([...guarantors, { full_name: '', phone: '', address: '', relationship: '', id_type: '', id_number: '' }]);
+      setGuarantors([...guarantors, { full_name: '', phone: '', address: '', relationship: '', id_type: '', id_number: '', state_of_origin: '' }]);
     }
   };
 
@@ -186,25 +193,84 @@ export const RegisterCustomer = () => {
                   value={customer.email}
                   onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
                 />
+                <Select
+                  label="State of Origin"
+                  value={customer.state_of_origin}
+                  onChange={(e) => setCustomer({ ...customer, state_of_origin: e.target.value })}
+                  options={NIGERIAN_STATES.map(state => ({ value: state, label: state }))}
+                  required
+                />
                 <Input
-                  label="Address"
+                  label="Occupation"
+                  value={customer.occupation}
+                  onChange={(e) => setCustomer({ ...customer, occupation: e.target.value })}
+                  required
+                />
+                <Select
+                  label="Marital Status"
+                  value={customer.marital_status}
+                  onChange={(e) => setCustomer({ ...customer, marital_status: e.target.value })}
+                  options={MARITAL_STATUS.map(status => ({ value: status.toLowerCase(), label: status }))}
+                  required
+                />
+                <Input
+                  label="Home Address"
                   value={customer.address}
                   onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
                   required
                 />
-                <Select
-                  label="ID Type"
-                  value={customer.id_type}
-                  onChange={(e) => setCustomer({ ...customer, id_type: e.target.value })}
-                  options={ID_TYPES.map(type => ({ value: type, label: type }))}
+                <Input
+                  label="Business Address"
+                  value={customer.business_address}
+                  onChange={(e) => setCustomer({ ...customer, business_address: e.target.value })}
                   required
                 />
                 <Input
-                  label="ID Number"
-                  value={customer.id_number}
-                  onChange={(e) => setCustomer({ ...customer, id_number: e.target.value })}
-                  required
+                  label="Union Name"
+                  value={customer.union_name}
+                  onChange={(e) => setCustomer({ ...customer, union_name: e.target.value })}
+                  placeholder="e.g., Traders Union, Artisan Association"
                 />
+                <div></div> {/* Empty div for grid alignment */}
+              </div>
+
+              {/* Next of Kin Section */}
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold text-white mb-4">Next of Kin Information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Input
+                    label="Next of Kin Name"
+                    value={customer.next_of_kin_name}
+                    onChange={(e) => setCustomer({ ...customer, next_of_kin_name: e.target.value })}
+                    required
+                  />
+                  <Input
+                    label="Next of Kin Address"
+                    value={customer.next_of_kin_address}
+                    onChange={(e) => setCustomer({ ...customer, next_of_kin_address: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* ID Information */}
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold text-white mb-4">Identification</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Select
+                    label="ID Type"
+                    value={customer.id_type}
+                    onChange={(e) => setCustomer({ ...customer, id_type: e.target.value })}
+                    options={ID_TYPES.map(type => ({ value: type, label: type }))}
+                    required
+                  />
+                  <Input
+                    label="ID Number"
+                    value={customer.id_number}
+                    onChange={(e) => setCustomer({ ...customer, id_number: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
             </div>
 
@@ -252,6 +318,13 @@ export const RegisterCustomer = () => {
                       onChange={(e) => updateGuarantor(index, 'address', e.target.value)}
                       required
                     />
+                    <Select
+                      label="State of Origin"
+                      value={guarantor.state_of_origin}
+                      onChange={(e) => updateGuarantor(index, 'state_of_origin', e.target.value)}
+                      options={NIGERIAN_STATES.map(state => ({ value: state, label: state }))}
+                      required
+                    />
                     <Input
                       label="Relationship"
                       value={guarantor.relationship}
@@ -259,6 +332,7 @@ export const RegisterCustomer = () => {
                       placeholder="e.g., Spouse, Sibling, Friend"
                       required
                     />
+                    <div></div> {/* Empty div for grid alignment */}
                     <Select
                       label="ID Type"
                       value={guarantor.id_type}
