@@ -5,6 +5,7 @@ import { Button } from '../../components/shared/Button';
 import { Card } from '../../components/shared/Card';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
+import { DailyPaymentCollector } from '../../components/payments/DailyPaymentCollector';
 import { DisbursementService } from '../../services/disbursementService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
@@ -111,6 +112,12 @@ export const AgentDashboard = () => {
                 <div className="text-3xl sm:text-4xl">💰</div>
               </div>
             </Card>
+          </div>
+
+          {/* Daily Payment Collector */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-4">💰 Collect Daily Payments</h3>
+            <DailyPaymentCollector />
           </div>
 
           {/* Daily Disbursements Section */}
