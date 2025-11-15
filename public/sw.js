@@ -18,13 +18,24 @@ self.addEventListener('install', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+  // Skip caching for Supabase API calls and external resources
+  if (event.request.url.includes('supabase.co') || 
+      event.request.url.includes('api') ||
+      event.request.method !== 'GET') {
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         // Return cached version or fetch from network
         return response || fetch(event.request);
-      }
-    )
+      })
+      .catch((error) => {
+        console.log('Fetch failed:', error);
+        // Let the request fail naturally instead of breaking the app
+        return fetch(event.request);
+      })
   );
 });
 
