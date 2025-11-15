@@ -95,7 +95,9 @@ export const DailyPaymentCollector = () => {
         amount,
         payment_type: 'daily',
         payment_date: new Date().toISOString().split('T')[0],
-        notes: `Daily payment collected by ${profile.full_name}`
+        notes: `Daily payment collected by ${profile.full_name}`,
+        agent_id: profile.id,
+        branch_id: profile.branch_id
       });
 
       alert('Payment recorded successfully!');

@@ -60,7 +60,10 @@ export const WeeklyPayments = () => {
 
   const handlePaymentToggle = async (cell: any) => {
     try {
-      if (!profile) return;
+      if (!profile) {
+        alert('Please login again');
+        return;
+      }
       
       const newStatus = cell.status === 'paid' ? 'unpaid' : 'paid';
       const amountPaid = newStatus === 'paid' ? cell.amount_due : 0;
@@ -77,9 +80,11 @@ export const WeeklyPayments = () => {
 
       // Reload payments
       setShowModal(false);
-      loadPayments();
-    } catch (err) {
+      await loadPayments();
+      alert('Payment updated successfully!');
+    } catch (err: any) {
       console.error('Failed to record payment:', err);
+      alert('Error: ' + (err.message || 'Failed to record payment'));
     }
   };
 

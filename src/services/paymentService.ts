@@ -216,18 +216,28 @@ export class PaymentService {
     payment_type: string;
     payment_date: string;
     notes?: string;
+    agent_id?: string;
+    branch_id?: string;
   }): Promise<Payment> {
-    // Get user info for agent_id and branch_id
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    // Use provided agent_id and branch_id, or get from auth
+    let agentId = data.agent_id;
+    let branchId = data.branch_id;
 
-    const { data: userProfile } = await supabase
-      .from('users')
-      .select('id, branch_id')
-      .eq('id', user.id)
-      .single();
+    if (!agentId || !branchId) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
 
-    if (!userProfile) throw new Error('User profile not found');
+      const { data: userProfile } = await supabase
+        .from('users')
+        .select('id, branch_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!userProfile) throw new Error('User profile not found');
+      
+      agentId = userProfile.id;
+      branchId = userProfile.branch_id;
+    }
 
     // Get customer's loan
     const { data: loan } = await supabase
@@ -242,8 +252,8 @@ export class PaymentService {
     const paymentData = {
       loan_id: loan.id,
       customer_id: data.customer_id,
-      agent_id: userProfile.id,
-      branch_id: userProfile.branch_id,
+      agent_id: agentId,
+      branch_id: branchId,
       amount_due: data.amount,
       amount_paid: data.amount,
       payment_date: data.payment_date,
