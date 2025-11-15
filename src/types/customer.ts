@@ -8,6 +8,14 @@ export interface Customer {
   address: string;
   id_type: IdType;
   id_number: string;
+  state_of_origin?: string;
+  occupation?: string;
+  next_of_kin_name?: string;
+  next_of_kin_address?: string;
+  business_address?: string;
+  marital_status?: string;
+  union_name?: string;
+  photo_url?: string;
   passport_photo_url?: string;
   id_photo_url?: string;
   branch_id: string;
@@ -25,6 +33,7 @@ export interface Guarantor {
   relationship: string;
   id_type: IdType;
   id_number: string;
+  state_of_origin?: string;
   passport_photo_url?: string;
   id_photo_url?: string;
   created_at: string;

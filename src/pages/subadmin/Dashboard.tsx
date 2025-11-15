@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../../components/shared/Button';
 import { StatsCard } from '../../components/shared/Card';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
+import { CompleteLoanTracker } from '../../components/loans/CompleteLoanTracker';
 
 export const SubAdminDashboard = () => {
   const navigate = useNavigate();
@@ -64,6 +65,12 @@ export const SubAdminDashboard = () => {
               icon="💰"
               variant="success"
             />
+          </div>
+
+          {/* Complete Loan Tracker */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-4">📊 Branch Loan Tracker</h3>
+            <CompleteLoanTracker branchId={profile?.branch_id} showAllBranches={false} />
           </div>
 
           {/* Welcome Message */}

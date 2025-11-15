@@ -3,9 +3,9 @@ import { Card } from '../shared/Card';
 import { Button } from '../shared/Button';
 import { Input } from '../shared/Input';
 import { Badge } from '../shared/Badge';
+import { Modal } from '../shared/Modal';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
-import { paymentService } from '../../services/paymentService';
-import { customerService } from '../../services/customerService';
+import { PaymentService } from '../../services/paymentService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { Payment } from '../../types/payment';
 import { Customer } from '../../types/customer';
@@ -30,6 +30,9 @@ export const DailyPaymentTracker: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'completed' | 'missed'>('all');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedPayment, setSelectedPayment] = useState<DailyPayment | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [loanDetails, setLoanDetails] = useState<any>(null);
 
   useEffect(() => {
     loadDailyPayments();
@@ -42,12 +45,26 @@ export const DailyPaymentTracker: React.FC = () => {
   const loadDailyPayments = async () => {
     try {
       setLoading(true);
-      const paymentsData = await paymentService.getDailyPayments(selectedDate);
+      const paymentsData = await PaymentService.getDailyPayments(selectedDate);
       setPayments(paymentsData);
     } catch (error) {
       console.error('Error loading daily payments:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePaymentClick = async (payment: DailyPayment) => {
+    setSelectedPayment(payment);
+    setShowModal(true);
+    
+    // Load loan details with calculations
+    try {
+      // Find the loan ID from the payment
+      const loanData = await PaymentService.getLoanPaymentSummary(payment.id);
+      setLoanDetails(loanData);
+    } catch (error) {
+      console.error('Error loading loan details:', error);
     }
   };
 
@@ -70,11 +87,11 @@ export const DailyPaymentTracker: React.FC = () => {
 
   const markPaymentCompleted = async (paymentId: string, amount: number) => {
     try {
-      await paymentService.recordPayment({
+      await PaymentService.recordDailyPayment({
         customer_id: payments.find(p => p.id === paymentId)?.customer_id || '',
         amount,
         payment_type: 'daily',
-        payment_date: new Date().toISOString(),
+        payment_date: new Date().toISOString().split('T')[0],
         notes: 'Daily payment collected'
       });
       
@@ -84,6 +101,9 @@ export const DailyPaymentTracker: React.FC = () => {
           ? { ...payment, status: 'completed' as const, paid_date: new Date().toISOString() }
           : payment
       ));
+      
+      setShowModal(false);
+      loadDailyPayments();
     } catch (error) {
       console.error('Error recording payment:', error);
     }
@@ -254,7 +274,11 @@ export const DailyPaymentTracker: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredPayments.map((payment) => (
-                <tr key={payment.id} className="hover:bg-gray-50">
+                <tr 
+                  key={payment.id} 
+                  className="hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handlePaymentClick(payment)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
                       {payment.customer_name}
@@ -320,6 +344,96 @@ export const DailyPaymentTracker: React.FC = () => {
           )}
         </div>
       </Card>
+
+      {/* Payment Detail Modal */}
+      {showModal && selectedPayment && (
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Payment Details"
+        >
+          <div className="space-y-4">
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-white mb-2">{selectedPayment.customer_name}</h3>
+              <p className="text-sm text-gray-400">Phone: {selectedPayment.customer_phone}</p>
+              <p className="text-sm text-gray-400">Due Date: {formatDate(selectedPayment.due_date)}</p>
+            </div>
+
+            {loanDetails && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Loan Amount</p>
+                  <p className="text-xl font-bold text-white">
+                    {formatCurrency(loanDetails.loanAmount)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Daily Payment</p>
+                  <p className="text-xl font-bold text-blue-400">
+                    {formatCurrency(selectedPayment.amount)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Total Paid</p>
+                  <p className="text-xl font-bold text-green-400">
+                    {formatCurrency(loanDetails.totalPaid)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Balance Left</p>
+                  <p className="text-xl font-bold text-yellow-400">
+                    {formatCurrency(loanDetails.balanceLeft)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <p className="text-sm text-gray-400 mb-2">Payment Status</p>
+              <div className={`inline-block px-4 py-2 rounded-lg font-semibold ${
+                selectedPayment.status === 'completed'
+                  ? 'bg-green-500 text-white'
+                  : selectedPayment.status === 'missed'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-yellow-500 text-white'
+              }`}>
+                {selectedPayment.status.toUpperCase()}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              {selectedPayment.status === 'pending' && (
+                <>
+                  <Button
+                    variant="primary"
+                    onClick={() => markPaymentCompleted(selectedPayment.id, selectedPayment.amount)}
+                    className="flex-1"
+                  >
+                    Mark as Paid
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      markPaymentMissed(selectedPayment.id);
+                      setShowModal(false);
+                    }}
+                    className="flex-1"
+                  >
+                    Mark as Missed
+                  </Button>
+                </>
+              )}
+              <Button
+                variant="secondary"
+                onClick={() => setShowModal(false)}
+                className="flex-1"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

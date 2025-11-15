@@ -93,13 +93,28 @@ export const RegisterCustomer = () => {
     try {
       if (!profile) throw new Error('User profile not found');
 
+      // Ensure all fields have values (not empty strings that might violate constraints)
+      const customerData = {
+        ...customer,
+        id_type: customer.id_type as any,
+        branch_id: profile.branch_id!,
+        agent_id: profile.id,
+        state_of_origin: customer.state_of_origin || null,
+        occupation: customer.occupation || null,
+        next_of_kin_name: customer.next_of_kin_name || null,
+        next_of_kin_address: customer.next_of_kin_address || null,
+        business_address: customer.business_address || null,
+        marital_status: customer.marital_status || null,
+        union_name: customer.union_name || null,
+      };
+
       await CustomerService.createCustomer(
-        {
-          ...customer,
-          branch_id: profile.branch_id!,
-          agent_id: profile.id,
-        },
-        guarantors
+        customerData,
+        guarantors.map(g => ({
+          ...g,
+          id_type: g.id_type as any,
+          state_of_origin: g.state_of_origin || null
+        }))
       );
 
       setSuccess(true);

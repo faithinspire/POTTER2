@@ -5,6 +5,7 @@ import { Button } from '../../components/shared/Button';
 import { Card } from '../../components/shared/Card';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
+import { CompleteLoanTracker } from '../../components/loans/CompleteLoanTracker';
 import { AnalyticsService } from '../../services/analyticsService';
 import { LoanService } from '../../services/loanService';
 import { DashboardStats } from '../../types/disbursement';
@@ -66,7 +67,16 @@ export const AdminDashboard = () => {
       const [statsData, disbursed, loans, branches] = await Promise.all([
         loadWithTimeout(
           AnalyticsService.getDashboardStats(),
-          { total_users: 0, total_customers: 0, active_loans: 0, collection_rate: 0 },
+          { 
+            total_users: 0, 
+            total_customers: 0, 
+            active_loans: 0, 
+            collection_rate: 0,
+            total_agents: 0,
+            total_active_loan_amount: 0,
+            total_collected: 0,
+            total_disbursed: 0
+          },
           'Stats'
         ),
         loadWithTimeout(
@@ -101,7 +111,16 @@ export const AdminDashboard = () => {
     } catch (error) {
       console.error('❌ Critical error loading dashboard:', error);
       // Ensure we always have some data to show
-      setStats({ total_users: 0, total_customers: 0, active_loans: 0, collection_rate: 0 });
+      setStats({ 
+        total_users: 0, 
+        total_customers: 0, 
+        active_loans: 0, 
+        collection_rate: 0,
+        total_agents: 0,
+        total_active_loan_amount: 0,
+        total_collected: 0,
+        total_disbursed: 0
+      });
       setDisbursedAmounts({ weekly: 0, monthly: 0, yearly: 0 });
       setRecentLoans([]);
       setBranchStats([]);
@@ -467,6 +486,12 @@ export const AdminDashboard = () => {
               </Button>
             </div>
           </Card>
+
+          {/* Complete Loan Tracker */}
+          <div className="mb-8">
+            <h3 className="text-2xl font-bold text-white mb-4">📊 Complete Loan Tracker</h3>
+            <CompleteLoanTracker showAllBranches={true} />
+          </div>
 
           {/* Recent Loans */}
           <Card className="glass-card p-4 sm:p-6 mb-8">

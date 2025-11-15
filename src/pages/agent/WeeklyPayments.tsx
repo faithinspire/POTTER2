@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { PaymentService } from '../../services/paymentService';
 import { Button } from '../../components/shared/Button';
 import { BackgroundAnimation } from '../../components/shared/BackgroundAnimation';
+import { Modal } from '../../components/shared/Modal';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import { startOfWeek, addDays, format } from 'date-fns';
 
@@ -14,6 +15,9 @@ export const WeeklyPayments = () => {
   const [payments, setPayments] = useState<any[]>([]);
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [stats, setStats] = useState({ total: 0, paid: 0, amount: 0 });
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [loanDetails, setLoanDetails] = useState<Record<string, any>>({});
 
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -28,6 +32,16 @@ export const WeeklyPayments = () => {
       const data = await PaymentService.getWeeklyPayments(profile.id, weekStart);
       setPayments(data);
       
+      // Load loan details for each unique loan
+      const uniqueLoanIds = [...new Set(data.map((p: any) => p.loan_id))];
+      const details: Record<string, any> = {};
+      
+      for (const loanId of uniqueLoanIds) {
+        const loanData = await PaymentService.getLoanPaymentSummary(loanId);
+        details[loanId] = loanData;
+      }
+      setLoanDetails(details);
+      
       // Calculate stats for today
       const today = format(new Date(), 'yyyy-MM-dd');
       const todayStats = await PaymentService.getPaymentStats(profile.id, today);
@@ -37,6 +51,11 @@ export const WeeklyPayments = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCellClick = (cell: any) => {
+    setSelectedPayment(cell);
+    setShowModal(true);
   };
 
   const handlePaymentToggle = async (cell: any) => {
@@ -57,6 +76,7 @@ export const WeeklyPayments = () => {
       });
 
       // Reload payments
+      setShowModal(false);
       loadPayments();
     } catch (err) {
       console.error('Failed to record payment:', err);
@@ -154,12 +174,12 @@ export const WeeklyPayments = () => {
                       {group.payments.slice(0, 6).map((payment: any, i: number) => (
                         <td key={i} className="p-3 text-center">
                           <button
-                            onClick={() => handlePaymentToggle(payment)}
-                            className={`w-12 h-12 rounded-lg font-bold transition-all ${
+                            onClick={() => handleCellClick(payment)}
+                            className={`w-12 h-12 rounded-lg font-bold transition-all hover:scale-110 cursor-pointer ${
                               payment.status === 'paid'
-                                ? 'bg-green-500 text-white'
+                                ? 'bg-green-500 text-white hover:bg-green-600'
                                 : payment.status === 'overdue'
-                                ? 'bg-red-500/20 text-red-400 border-2 border-red-500'
+                                ? 'bg-red-500/20 text-red-400 border-2 border-red-500 hover:bg-red-500/30'
                                 : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                             }`}
                           >
@@ -194,6 +214,91 @@ export const WeeklyPayments = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Detail Modal */}
+      {showModal && selectedPayment && (
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Payment Details"
+        >
+          <div className="space-y-4">
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-white mb-2">{selectedPayment.customer_name}</h3>
+              <p className="text-sm text-gray-400">Payment Date: {formatDate(selectedPayment.date)}</p>
+            </div>
+
+            {loanDetails[selectedPayment.loan_id] && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Loan Amount</p>
+                  <p className="text-xl font-bold text-white">
+                    {formatCurrency(loanDetails[selectedPayment.loan_id].loanAmount)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Daily Payment</p>
+                  <p className="text-xl font-bold text-blue-400">
+                    {formatCurrency(selectedPayment.amount_due)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Total Paid</p>
+                  <p className="text-xl font-bold text-green-400">
+                    {formatCurrency(loanDetails[selectedPayment.loan_id].totalPaid)}
+                  </p>
+                </div>
+                <div className="bg-slate-800 p-4 rounded-lg">
+                  <p className="text-xs text-gray-400 mb-1">Balance Left</p>
+                  <p className="text-xl font-bold text-yellow-400">
+                    {formatCurrency(loanDetails[selectedPayment.loan_id].balanceLeft)}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-slate-800 p-4 rounded-lg">
+              <p className="text-sm text-gray-400 mb-2">Payment Status</p>
+              <div className={`inline-block px-4 py-2 rounded-lg font-semibold ${
+                selectedPayment.status === 'paid'
+                  ? 'bg-green-500 text-white'
+                  : selectedPayment.status === 'overdue'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-gray-600 text-white'
+              }`}>
+                {selectedPayment.status.toUpperCase()}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              {selectedPayment.status !== 'paid' ? (
+                <Button
+                  variant="primary"
+                  onClick={() => handlePaymentToggle(selectedPayment)}
+                  className="flex-1"
+                >
+                  Mark as Paid
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={() => handlePaymentToggle(selectedPayment)}
+                  className="flex-1"
+                >
+                  Mark as Unpaid
+                </Button>
+              )}
+              <Button
+                variant="secondary"
+                onClick={() => setShowModal(false)}
+                className="flex-1"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

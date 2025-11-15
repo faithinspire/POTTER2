@@ -41,17 +41,18 @@ export class PaymentService {
   ): Promise<PaymentCell[]> {
     const weekEnd = addDays(weekStart, 6);
 
-    // Get active loans for agent
+    // Get active loans for agent (approved or active status)
     const { data: loans, error: loansError } = await supabase
       .from('loans')
       .select(`
         id,
         customer_id,
         weekly_payment,
+        amount,
         customers(full_name)
       `)
       .eq('agent_id', agentId)
-      .eq('status', 'approved')
+      .in('status', ['approved', 'active'])
       .order('created_at', { ascending: false });
 
     if (loansError) throw loansError;
@@ -327,5 +328,45 @@ export class PaymentService {
       acc[date].amount += payment.amount_paid;
       return acc;
     }, {});
+  }
+
+  /**
+   * Get loan payment summary with balance calculation
+   */
+  static async getLoanPaymentSummary(loanId: string): Promise<{
+    loanAmount: number;
+    totalPaid: number;
+    balanceLeft: number;
+    paymentsCount: number;
+  }> {
+    // Get loan details
+    const { data: loan, error: loanError } = await supabase
+      .from('loans')
+      .select('amount, interest_rate, duration_weeks')
+      .eq('id', loanId)
+      .single();
+
+    if (loanError) throw loanError;
+
+    // Calculate total amount with interest
+    const totalAmount = loan.amount * (1 + loan.interest_rate / 100);
+
+    // Get all payments for this loan
+    const { data: payments, error: paymentsError } = await supabase
+      .from('payments')
+      .select('amount_paid')
+      .eq('loan_id', loanId);
+
+    if (paymentsError) throw paymentsError;
+
+    const totalPaid = payments?.reduce((sum, p) => sum + p.amount_paid, 0) || 0;
+    const balanceLeft = totalAmount - totalPaid;
+
+    return {
+      loanAmount: totalAmount,
+      totalPaid,
+      balanceLeft: Math.max(0, balanceLeft),
+      paymentsCount: payments?.length || 0,
+    };
   }
 }

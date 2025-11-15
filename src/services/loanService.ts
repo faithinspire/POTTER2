@@ -143,6 +143,30 @@ export class LoanService {
         agent:users!loans_agent_id_fkey(full_name),
         branch:branches(name)
       `)
+      .order('created_at', { ascending: false});
+
+    if (error) throw error;
+    return (data || []).map(loan => ({
+      ...loan,
+      customer_name: loan.customer?.full_name || '',
+      agent_name: loan.agent?.full_name || '',
+      branch_name: loan.branch?.name || '',
+    }));
+  }
+
+  /**
+   * Get loans by branch (subadmin)
+   */
+  static async getLoansByBranch(branchId: string): Promise<LoanWithDetails[]> {
+    const { data, error } = await supabase
+      .from('loans')
+      .select(`
+        *,
+        customer:customers(full_name, phone),
+        agent:users!loans_agent_id_fkey(full_name),
+        branch:branches(name)
+      `)
+      .eq('branch_id', branchId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
