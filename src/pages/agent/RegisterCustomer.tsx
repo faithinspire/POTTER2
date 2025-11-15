@@ -25,7 +25,8 @@ export const RegisterCustomer = () => {
     state_of_origin: '',
     occupation: '',
     next_of_kin_name: '',
-    next_of_kin_phone: '',
+    next_of_kin_address: '',
+    business_address: '',
     marital_status: '',
     union_name: '',
   });
@@ -95,7 +96,6 @@ export const RegisterCustomer = () => {
       await CustomerService.createCustomer(
         {
           ...customer,
-          id_type: customer.id_type as any,
           branch_id: profile.branch_id!,
           agent_id: profile.id,
         },
@@ -220,11 +220,18 @@ export const RegisterCustomer = () => {
                   required
                 />
                 <Input
+                  label="Business Address"
+                  value={customer.business_address}
+                  onChange={(e) => setCustomer({ ...customer, business_address: e.target.value })}
+                  required
+                />
+                <Input
                   label="Union Name"
                   value={customer.union_name}
                   onChange={(e) => setCustomer({ ...customer, union_name: e.target.value })}
                   placeholder="e.g., Traders Union, Artisan Association"
                 />
+                <div></div> {/* Empty div for grid alignment */}
               </div>
 
               {/* Next of Kin Section */}
@@ -238,10 +245,9 @@ export const RegisterCustomer = () => {
                     required
                   />
                   <Input
-                    label="Next of Kin Phone"
-                    value={customer.next_of_kin_phone}
-                    onChange={(e) => setCustomer({ ...customer, next_of_kin_phone: e.target.value })}
-                    placeholder="e.g., 08012345678"
+                    label="Next of Kin Address"
+                    value={customer.next_of_kin_address}
+                    onChange={(e) => setCustomer({ ...customer, next_of_kin_address: e.target.value })}
                     required
                   />
                 </div>
